@@ -1,0 +1,3 @@
+[submodule "external/RGLGazeboPlugin"]
+	path = external/RGLGazeboPlugin
+	url = https://github.com/RobotecAI/RGLGazeboPlugin.git

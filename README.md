@@ -9,6 +9,12 @@
 ubuntu24.04
 gazebo sim Harmonic
 
+## 依赖拉取
+
+本项目使用子模块自动拉取插件依赖，首次克隆后执行：
+
+git submodule update --init --recursive
+
 ## TODO
 
 - ✅ 给机器人加入云台结构
