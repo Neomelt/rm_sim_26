@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.7">
-  <model name="mecanum_robot">
+  <model name="mecanum_robot" xmlns:gz="http://gazebosim.org/schema">
 
     <!-- BASE FOOTPRINT (虚拟链接) -->
     <link name="body">
@@ -53,7 +53,7 @@
 
     <!-- FRONT LEFT WHEEL -->
     <link name="front_left_wheel_link">
-      <pose relative_to="chassis">0.25 0.25 -0.075 1.5707 0 0</pose>
+      <pose relative_to="chassis">0.25 0.25 -0.075 -1.5707 0 0</pose>
       <inertial>
         <mass>0.5</mass>
         <inertia>
@@ -84,9 +84,9 @@
         <surface>
           <friction>
             <ode>
-              <mu>1.5</mu>
-              <mu2>0.5</mu2>
-              <fdir1>1 -1 0</fdir1>
+              <mu>1.0</mu>
+              <mu2>0.0</mu2>
+              <fdir1 gz:expressed_in="chassis">1 -1 0</fdir1>
             </ode>
           </friction>
         </surface>
@@ -103,7 +103,7 @@
 
     <!-- FRONT RIGHT WHEEL -->
     <link name="front_right_wheel_link">
-      <pose relative_to="chassis">0.25 -0.25 -0.075 1.5707 0 0</pose>
+      <pose relative_to="chassis">0.25 -0.25 -0.075 -1.5707 0 0</pose>
       <inertial>
         <mass>0.5</mass>
         <inertia>
@@ -134,9 +134,9 @@
         <surface>
           <friction>
             <ode>
-              <mu>1.5</mu>
-              <mu2>0.5</mu2>
-              <fdir1>1 1 0</fdir1>
+              <mu>1.0</mu>
+              <mu2>0.0</mu2>
+              <fdir1 gz:expressed_in="chassis">1 1 0</fdir1>
             </ode>
           </friction>
         </surface>
@@ -153,7 +153,7 @@
 
     <!-- REAR LEFT WHEEL -->
     <link name="rear_left_wheel_link">
-      <pose relative_to="chassis">-0.25 0.25 -0.075 1.5707 0 0</pose>
+      <pose relative_to="chassis">-0.25 0.25 -0.075 -1.5707 0 0</pose>
       <inertial>
         <mass>0.5</mass>
         <inertia>
@@ -184,9 +184,9 @@
         <surface>
           <friction>
             <ode>
-              <mu>1.5</mu>
-              <mu2>0.5</mu2>
-              <fdir1>1 -1 0</fdir1>
+              <mu>1.0</mu>
+              <mu2>0.0</mu2>
+              <fdir1 gz:expressed_in="chassis">1 1 0</fdir1>
             </ode>
           </friction>
         </surface>
@@ -203,7 +203,7 @@
 
     <!-- REAR RIGHT WHEEL -->
     <link name="rear_right_wheel_link">
-      <pose relative_to="chassis">-0.25 -0.25 -0.075 1.5707 0 0</pose>
+      <pose relative_to="chassis">-0.25 -0.25 -0.075 -1.5707 0 0</pose>
       <inertial>
         <mass>0.5</mass>
         <inertia>
@@ -234,9 +234,9 @@
         <surface>
           <friction>
             <ode>
-              <mu>1.5</mu>
-              <mu2>0.5</mu2>
-              <fdir1>1 1 0</fdir1>
+              <mu>1.0</mu>
+              <mu2>0.0</mu2>
+              <fdir1 gz:expressed_in="chassis">1 -1 0</fdir1>
             </ode>
           </friction>
         </surface>
