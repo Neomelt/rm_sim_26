@@ -1,8 +1,17 @@
 <?xml version="1.0"?>
 <robot name="mecanum_robot">
 
+  <!-- BASE LINK (standard ROS convention) -->
+  <link name="base_link"/>
+
   <!-- BASE FOOTPRINT -->
   <link name="body"/>
+
+  <joint name="base_link_to_body" type="fixed">
+    <parent link="base_link"/>
+    <child link="body"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
 
   <!-- CHASSIS -->
   <link name="chassis">
@@ -27,32 +36,32 @@
   <joint name="front_left_wheel_joint" type="continuous">
     <parent link="chassis"/>
     <child link="front_left_wheel_link"/>
-    <origin xyz="0.25 0.25 -0.075" rpy="1.5707 0 0"/>
-    <axis xyz="0 0 1"/>
+    <origin xyz="0.25 0.25 -0.075" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
   </joint>
 
   <link name="front_right_wheel_link"/>
   <joint name="front_right_wheel_joint" type="continuous">
     <parent link="chassis"/>
     <child link="front_right_wheel_link"/>
-    <origin xyz="0.25 -0.25 -0.075" rpy="1.5707 0 0"/>
-    <axis xyz="0 0 1"/>
+    <origin xyz="0.25 -0.25 -0.075" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
   </joint>
 
   <link name="rear_left_wheel_link"/>
   <joint name="rear_left_wheel_joint" type="continuous">
     <parent link="chassis"/>
     <child link="rear_left_wheel_link"/>
-    <origin xyz="-0.25 0.25 -0.075" rpy="1.5707 0 0"/>
-    <axis xyz="0 0 1"/>
+    <origin xyz="-0.25 0.25 -0.075" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
   </joint>
 
   <link name="rear_right_wheel_link"/>
   <joint name="rear_right_wheel_joint" type="continuous">
     <parent link="chassis"/>
     <child link="rear_right_wheel_link"/>
-    <origin xyz="-0.25 -0.25 -0.075" rpy="1.5707 0 0"/>
-    <axis xyz="0 0 1"/>
+    <origin xyz="-0.25 -0.25 -0.075" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
   </joint>
 
   <!-- LIDAR -->
@@ -79,7 +88,7 @@
     <origin xyz="0 0 0.125" rpy="0 0 0"/>
   </joint>
 
-  <!-- GIMBAL YAW（关键：连接gimbal_base和gimbal_yaw）-->
+  <!-- GIMBAL YAW（连接gimbal_base和gimbal_yaw）-->
   <link name="gimbal_yaw"/>
   <joint name="gimbal_yaw_joint" type="revolute">
     <parent link="gimbal_base"/>
@@ -89,7 +98,7 @@
     <limit lower="-3.14159" upper="3.14159" effort="10" velocity="3.14"/>
   </joint>
 
-  <!-- GIMBAL PITCH BRACKET（关键：连接gimbal_yaw和gimbal_pitch_bracket）-->
+  <!-- GIMBAL PITCH BRACKET（连接gimbal_yaw和gimbal_pitch_bracket）-->
   <link name="gimbal_pitch_bracket"/>
   <joint name="gimbal_pitch_bracket_joint" type="fixed">
     <parent link="gimbal_yaw"/>
@@ -97,7 +106,7 @@
     <origin xyz="0 0 0.08" rpy="0 0 0"/>
   </joint>
 
-  <!-- GIMBAL PITCH（关键：连接gimbal_pitch_bracket和gimbal_pitch）-->
+  <!-- GIMBAL PITCH（连接gimbal_pitch_bracket和gimbal_pitch）-->
   <link name="gimbal_pitch"/>
   <joint name="gimbal_pitch_joint" type="revolute">
     <parent link="gimbal_pitch_bracket"/>

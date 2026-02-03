@@ -1,4 +1,5 @@
 import os
+import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
@@ -15,7 +16,9 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
+    # ==================== 辅助函数 ====================
     def _has_nvidia_ml():
+        """检测系统是否有NVIDIA显卡驱动"""
         candidates = [
             "/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1",
             "/usr/lib64/libnvidia-ml.so.1",
@@ -23,7 +26,52 @@ def generate_launch_description():
         ]
         return any(os.path.exists(p) for p in candidates)
 
+    def _load_sim_config(config_path):
+        """加载仿真配置文件"""
+        default_config = {
+            "lidar_mode": "auto",
+            "rgl_plugin_root": "",
+            "livox_mid360": {
+                "horizontal_samples": 1875,
+                "horizontal_min_angle": 0.0,
+                "horizontal_max_angle": 6.2831852,
+                "vertical_samples": 32,
+                "vertical_min_angle": -0.12217304764,
+                "vertical_max_angle": 0.90757121104,
+                "range_min": 0.1,
+                "range_max": 40.0,
+                "update_rate": 10,
+                "noise_type": "gaussian",
+                "noise_mean": 0.0,
+                "noise_stddev": 0.01,
+            }
+        }
+        if os.path.exists(config_path):
+            with open(config_path, "r", encoding="utf-8") as f:
+                user_config = yaml.safe_load(f) or {}
+            # 合并配置
+            for key in default_config:
+                if key in user_config:
+                    if isinstance(default_config[key], dict):
+                        default_config[key].update(user_config[key])
+                    else:
+                        default_config[key] = user_config[key]
+        return default_config
+
+    def _determine_use_rgl(lidar_mode, has_nvidia):
+        """根据配置和硬件情况决定是否使用RGL"""
+        if lidar_mode == "rgl":
+            if not has_nvidia:
+                print("[WARN] lidar_mode设置为'rgl'但未检测到NVIDIA显卡，强制切换为gpu_lidar")
+                return False
+            return True
+        elif lidar_mode == "gpu_lidar":
+            return False
+        else:  # auto
+            return has_nvidia
+
     def _write_fallback_world(src_path):
+        """生成不含RGL插件的world文件"""
         with open(src_path, "r", encoding="utf-8") as f:
             content = f.read()
         plugin_start = content.find(
@@ -41,47 +89,45 @@ def generate_launch_description():
             f.write(content)
         return out_path
 
-    def _write_fallback_model(src_path):
+    def _write_fallback_model(src_path, lidar_config):
+        """生成使用gpu_lidar的model文件"""
         with open(src_path, "r", encoding="utf-8") as f:
             content = f.read()
         sensor_start = content.find('<sensor name="RGLLidar" type="custom">')
         if sensor_start != -1:
             sensor_end = content.find("</sensor>", sensor_start)
             if sensor_end != -1:
-                # Livox Mid360 parameters from pb2025_robot_description:
-                # Horizontal: 360° (0 to 2*pi), samples=1875 at 20Hz or proportional
-                # Vertical: -7° to +52° (-0.122 to 0.908 rad), 32 layers
-                # Range: 0.1m to 40m
+                # 从配置文件读取Livox Mid360参数
                 fallback_sensor = (
                     '<sensor name="livox_lidar" type="gpu_lidar">\n'
                     "  <pose>0 0 0 0 0 0</pose>\n"
                     "  <always_on>true</always_on>\n"
                     "  <visualize>true</visualize>\n"
-                    "  <update_rate>10</update_rate>\n"
-                    "  <topic>livox/lidar</topic>\n"
-                    "  <ignition_frame_id>livox_lidar</ignition_frame_id>\n"
+                    f'  <update_rate>{lidar_config["update_rate"]}</update_rate>\n'
+                    "  <topic>gz_lidar_points</topic>\n"
+                    "  <gz_frame_id>livox_lidar</gz_frame_id>\n"
                     "  <ray>\n"
                     "    <scan>\n"
                     "      <horizontal>\n"
-                    "        <samples>1875</samples>\n"
+                    f'        <samples>{lidar_config["horizontal_samples"]}</samples>\n'
                     "        <resolution>1.0</resolution>\n"
-                    "        <min_angle>0</min_angle>\n"
-                    "        <max_angle>6.2831852</max_angle>\n"
+                    f'        <min_angle>{lidar_config["horizontal_min_angle"]}</min_angle>\n'
+                    f'        <max_angle>{lidar_config["horizontal_max_angle"]}</max_angle>\n'
                     "      </horizontal>\n"
                     "      <vertical>\n"
-                    "        <samples>32</samples>\n"
-                    "        <min_angle>-0.12217304764</min_angle>\n"
-                    "        <max_angle>0.90757121104</max_angle>\n"
+                    f'        <samples>{lidar_config["vertical_samples"]}</samples>\n'
+                    f'        <min_angle>{lidar_config["vertical_min_angle"]}</min_angle>\n'
+                    f'        <max_angle>{lidar_config["vertical_max_angle"]}</max_angle>\n'
                     "      </vertical>\n"
                     "    </scan>\n"
                     "    <range>\n"
-                    "      <min>0.1</min>\n"
-                    "      <max>40.0</max>\n"
+                    f'      <min>{lidar_config["range_min"]}</min>\n'
+                    f'      <max>{lidar_config["range_max"]}</max>\n'
                     "    </range>\n"
                     "    <noise>\n"
-                    "      <type>gaussian</type>\n"
-                    "      <mean>0.0</mean>\n"
-                    "      <stddev>0.01</stddev>\n"
+                    f'      <type>{lidar_config["noise_type"]}</type>\n'
+                    f'      <mean>{lidar_config["noise_mean"]}</mean>\n'
+                    f'      <stddev>{lidar_config["noise_stddev"]}</stddev>\n'
                     "    </noise>\n"
                     "  </ray>\n"
                     "</sensor>\n"
@@ -96,14 +142,26 @@ def generate_launch_description():
             f.write(content)
         return out_path
 
+    # ==================== 主要逻辑 ====================
     # Package name
     package_name = "rm_sim_26"
-
-    has_nvidia = _has_nvidia_ml()
 
     # Get package share directory
     pkg_share = FindPackageShare(package_name)
     pkg_share_path = get_package_share_directory(package_name)
+
+    # 加载配置文件
+    config_path = os.path.join(pkg_share_path, "config", "sim_config.yaml")
+    sim_config = _load_sim_config(config_path)
+
+    # 检测硬件并决定使用哪种雷达模式
+    has_nvidia = _has_nvidia_ml()
+    use_rgl = _determine_use_rgl(sim_config["lidar_mode"], has_nvidia)
+    
+    print(f"[INFO] 配置文件: {config_path}")
+    print(f"[INFO] lidar_mode设置: {sim_config['lidar_mode']}")
+    print(f"[INFO] 检测到NVIDIA显卡: {has_nvidia}")
+    print(f"[INFO] 雷达仿真模式: {'RGL (NVIDIA)' if use_rgl else 'gpu_lidar (通用)'}")
 
     # 设置Gazebo资源路径
     set_gazebo_resource_path = SetEnvironmentVariable(
@@ -120,8 +178,12 @@ def generate_launch_description():
     if not os.path.isdir(os.path.join(source_root, "external", "RGLGazeboPlugin")):
         source_root = ""
 
-    # Optional RGL plugin build paths (can be overridden by env vars)
-    rgl_root = os.environ.get("RGL_GZ_PLUGIN_ROOT", source_root) if has_nvidia else ""
+    # Optional RGL plugin build paths (can be overridden by env vars or config)
+    rgl_root_from_config = sim_config.get("rgl_plugin_root", "")
+    rgl_root = ""
+    if use_rgl:
+        rgl_root = os.environ.get("RGL_GZ_PLUGIN_ROOT", rgl_root_from_config or source_root)
+    
     rgl_system_plugin = (
         os.path.join(rgl_root, "external", "RGLGazeboPlugin", "install", "RGLServerPlugin")
         if rgl_root
@@ -134,7 +196,7 @@ def generate_launch_description():
     )
 
     system_plugin_path_parts = [os.environ.get("GZ_SIM_SYSTEM_PLUGIN_PATH", "")]
-    if rgl_system_plugin and has_nvidia:
+    if rgl_system_plugin and use_rgl:
         system_plugin_path_parts += [":", rgl_system_plugin]
     system_plugin_path_parts += [":", "/usr/lib/x86_64-linux-gnu/gz-sim-8/plugins"]
 
@@ -144,7 +206,7 @@ def generate_launch_description():
     )
 
     gui_plugin_path_parts = [os.environ.get("GZ_GUI_PLUGIN_PATH", "")]
-    if rgl_gui_plugin and has_nvidia:
+    if rgl_gui_plugin and use_rgl:
         gui_plugin_path_parts += [":", rgl_gui_plugin]
     set_gz_gui_plugin_path = SetEnvironmentVariable(
         name="GZ_GUI_PLUGIN_PATH",
@@ -157,7 +219,7 @@ def generate_launch_description():
         else ""
     )
     rgl_patterns_dir = (
-        os.environ.get("RGL_PATTERNS_DIR", patterns_dir_fallback) if has_nvidia else ""
+        os.environ.get("RGL_PATTERNS_DIR", patterns_dir_fallback) if use_rgl else ""
     )
     set_rgl_patterns_dir = (
         SetEnvironmentVariable(name="RGL_PATTERNS_DIR", value=rgl_patterns_dir)
@@ -185,13 +247,14 @@ def generate_launch_description():
         "use_sim_time", default_value="true", description="Use simulation time"
     )
 
-    # Override to non-RGL files when NVIDIA runtime is not available
-    if not has_nvidia:
+    # Override to non-RGL files when not using RGL
+    if not use_rgl:
         world_file = _write_fallback_world(
             os.path.join(pkg_share_path, "worlds", "rmuc_2025_world.world")
         )
         robot_model_path = _write_fallback_model(
-            os.path.join(pkg_share_path, "moudles", "mecanum_car", "model.sdf")
+            os.path.join(pkg_share_path, "moudles", "mecanum_car", "model.sdf"),
+            sim_config["livox_mid360"]
         )
 
     # Launch Gazebo with the world
@@ -257,7 +320,7 @@ def generate_launch_description():
     )
 
     # Bridge for lidar topic
-    if has_nvidia:
+    if use_rgl:
         lidar_bridge = Node(
             package="ros_gz_bridge",
             executable="parameter_bridge",
@@ -268,12 +331,15 @@ def generate_launch_description():
         )
     else:
         # gpu_lidar outputs PointCloud2 on <topic>/points
-        # Bridge directly to /livox/lidar/points
+        # Bridge to internal topic, then relay with correct frame_id to /livox/lidar
         lidar_bridge = Node(
             package="ros_gz_bridge",
             executable="parameter_bridge",
             arguments=[
-                "/livox/lidar/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked"
+                "/gz_lidar_points/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked"
+            ],
+            remappings=[
+                ("/gz_lidar_points/points", "/livox/lidar"),
             ],
             output="screen",
         )
@@ -281,11 +347,11 @@ def generate_launch_description():
     # LaserScan to PointCloud converter no longer needed since gpu_lidar outputs PointCloud2 directly
     laserscan_to_cloud = None
 
-    # Static TF publisher to remap Gazebo's frame to the robot model frame
-    # Gazebo gpu_lidar uses full model path as frame_id: mecanum_bot/livox_lidar/livox_lidar
-    # We need to link it to the robot's livox_lidar frame with identity transform
+    # Frame ID relay: republish pointcloud with correct frame_id
+    # Gazebo gpu_lidar ignores gz_frame_id and uses model path as frame_id
+    # Use a simple Python node to fix the frame_id in the pointcloud header
     lidar_frame_remap = None
-    if not has_nvidia:
+    if not use_rgl:
         lidar_frame_remap = Node(
             package="tf2_ros",
             executable="static_transform_publisher",

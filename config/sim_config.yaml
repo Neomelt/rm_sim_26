@@ -1,0 +1,36 @@
+# RM_SIM_26 仿真配置文件
+# Simulation Configuration
+
+# 雷达仿真模式
+# lidar_mode: "rgl"     - 使用RGL插件模拟Mid360 (需要NVIDIA显卡)
+# lidar_mode: "gpu_lidar" - 使用Gazebo内置gpu_lidar (无需NVIDIA显卡)
+# lidar_mode: "auto"    - 自动检测，有NVIDIA显卡则使用rgl，否则使用gpu_lidar
+lidar_mode: "auto"
+
+# RGL插件路径配置 (仅lidar_mode为rgl时生效)
+# 留空则自动检测工作区中的RGLGazeboPlugin目录
+rgl_plugin_root: ""
+
+# Livox Mid360 雷达参数 (仅gpu_lidar模式下使用)
+livox_mid360:
+  # 水平扫描
+  horizontal_samples: 1875
+  horizontal_min_angle: 0.0           # rad
+  horizontal_max_angle: 6.2831852     # 2*pi rad (360°)
+  
+  # 垂直扫描
+  vertical_samples: 32
+  vertical_min_angle: -0.12217304764  # -7° in rad
+  vertical_max_angle: 0.90757121104   # +52° in rad
+  
+  # 距离
+  range_min: 0.1   # m
+  range_max: 40.0  # m
+  
+  # 更新频率
+  update_rate: 10  # Hz
+  
+  # 噪声
+  noise_type: "gaussian"
+  noise_mean: 0.0
+  noise_stddev: 0.01
