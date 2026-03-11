@@ -2,6 +2,21 @@
 <sdf version='1.7'>
   <world name='default'>
 
+    <gui fullscreen='0'>
+      <plugin filename='MinimalScene' name='3D View'>
+        <gz-gui>
+          <title>3D View</title>
+          <property type='bool' key='showTitleBar'>false</property>
+          <property type='string' key='state'>docked</property>
+        </gz-gui>
+        <engine>ogre2</engine>
+        <scene>scene</scene>
+        <ambient_light>0.4 0.4 0.4</ambient_light>
+        <background_color>0.8 0.8 0.8</background_color>
+        <camera_pose>14.5 8 28 0 1.57 1.57</camera_pose>
+      </plugin>
+    </gui>
+
     <!-- Global RGL scene manager required to upload meshes to GPU -->
     <plugin name='rgl::RGLServerPluginManager' filename='RGLServerPluginManager'>
       <do_ignore_entities_in_lidar_link>true</do_ignore_entities_in_lidar_link>
