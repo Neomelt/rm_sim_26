@@ -53,6 +53,24 @@ source install/setup.bash
 ros2 launch rm_sim_26 rmuc_2025_sim.launch.py
 ```
 
+当前仅维护 `rmuc_2025_sim.launch.py` 这一启动入口。
+
+## 仓库结构
+
+- `config/`: 仿真模式与桥接配置
+- `launch/`: Gazebo / ROS 2 启动文件
+- `models/`: 机器人与场地模型资源
+- `plugin/`: Livox Mid360 雷达pattern文件
+- `worlds/`: Gazebo world文件
+
+## RGL模式准备
+
+如需启用 `lidar_mode: "rgl"`，先初始化并编译RGL子模块：
+
+```bash
+git submodule update --init --recursive
+```
+
 ## TODO
 
 - ✅ 给机器人加入云台结构
@@ -60,8 +78,8 @@ ros2 launch rm_sim_26 rmuc_2025_sim.launch.py
 - ✅ 加入比赛场地模型
 - ✅ 实现Mid360的仿真
 - ✅ 支持无NVIDIA显卡的仿真方案
-- [] 修正每次启动的视角
-- [] 修改车身模型以符合实际机器人
+- [ ] 修正每次启动的视角
+- [ ] 修改车身模型以符合实际机器人
 
 ## 致谢
 
