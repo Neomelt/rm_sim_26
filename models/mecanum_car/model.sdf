@@ -294,7 +294,7 @@
           <update_on_paused_sim>false</update_on_paused_sim>
           <topic>livox/lidar</topic>
           <frame>livox_lidar</frame>
-          <pattern_preset_path>/home/xlqmu/rm_sim_26/plugin/LivoxMid360.mat3x4f</pattern_preset_path>
+          <pattern_preset_path>__RM_SIM_26_PATTERN_PRESET_PATH__</pattern_preset_path>
         </plugin>
       </sensor>
 

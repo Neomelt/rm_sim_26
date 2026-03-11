@@ -9,7 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 
 # Install directories (skip missing ones)
-set(_install_dirs launch worlds moudles rviz config)
+set(_install_dirs config launch models plugin worlds)
 foreach(_dir IN LISTS _install_dirs)
   if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${_dir}")
     install(
@@ -18,11 +18,6 @@ foreach(_dir IN LISTS _install_dirs)
     )
   endif()
 endforeach()
-
-install(
-  PROGRAMS scripts/laserscan_to_pointcloud.py
-  DESTINATION lib/${PROJECT_NAME}
-)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
