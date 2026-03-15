@@ -13,55 +13,147 @@
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
-  <!-- CHASSIS -->
+  <!-- CHASSIS (origin 在轮轴高度, 与 body 同一位置) -->
   <link name="chassis">
     <visual>
       <geometry>
-        <box size="0.6 0.4 0.15"/>
+        <mesh filename="package://rm_sim_26/models/mecanum_car/meshes/chassis_base.dae"/>
       </geometry>
-      <material name="grey">
-        <color rgba="0.35 0.35 0.35 1"/>
-      </material>
     </visual>
   </link>
 
   <joint name="body_to_chassis" type="fixed">
     <parent link="body"/>
     <child link="chassis"/>
-    <origin xyz="0 0 0.225" rpy="0 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
-  <!-- WHEELS -->
-  <link name="front_left_wheel_link"/>
+  <!-- ========== 装甲板模块 ========== -->
+
+  <!-- 前装甲板 -->
+  <link name="armor_front">
+    <visual>
+      <geometry>
+        <box size="0.012 0.135 0.125"/>
+      </geometry>
+      <material name="armor_gray">
+        <color rgba="0.15 0.15 0.15 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="armor_front_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="armor_front"/>
+    <origin xyz="0.243 0 0.10" rpy="0 0 0"/>
+  </joint>
+
+  <!-- 后装甲板 -->
+  <link name="armor_rear">
+    <visual>
+      <geometry>
+        <box size="0.012 0.135 0.125"/>
+      </geometry>
+      <material name="armor_gray">
+        <color rgba="0.15 0.15 0.15 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="armor_rear_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="armor_rear"/>
+    <origin xyz="-0.243 0 0.10" rpy="0 0 0"/>
+  </joint>
+
+  <!-- 左装甲板 -->
+  <link name="armor_left">
+    <visual>
+      <geometry>
+        <box size="0.135 0.012 0.125"/>
+      </geometry>
+      <material name="armor_gray">
+        <color rgba="0.15 0.15 0.15 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="armor_left_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="armor_left"/>
+    <origin xyz="0 0.184 0.10" rpy="0 0 0"/>
+  </joint>
+
+  <!-- 右装甲板 -->
+  <link name="armor_right">
+    <visual>
+      <geometry>
+        <box size="0.135 0.012 0.125"/>
+      </geometry>
+      <material name="armor_gray">
+        <color rgba="0.15 0.15 0.15 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="armor_right_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="armor_right"/>
+    <origin xyz="0 -0.184 0.10" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ========== 轮子 (Z=0, Y 轴旋转) ========== -->
+
+  <link name="front_left_wheel_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://rm_sim_26/models/mecanum_car/meshes/wheel_left.dae"/>
+      </geometry>
+    </visual>
+  </link>
   <joint name="front_left_wheel_joint" type="continuous">
     <parent link="chassis"/>
     <child link="front_left_wheel_link"/>
-    <origin xyz="0.25 0.25 -0.075" rpy="1.5707 0 0"/>
-    <axis xyz="0 0 1"/>
+    <origin xyz="0.20 0.21 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
   </joint>
 
-  <link name="front_right_wheel_link"/>
+  <link name="front_right_wheel_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://rm_sim_26/models/mecanum_car/meshes/wheel_right.dae"/>
+      </geometry>
+    </visual>
+  </link>
   <joint name="front_right_wheel_joint" type="continuous">
     <parent link="chassis"/>
     <child link="front_right_wheel_link"/>
-    <origin xyz="0.25 -0.25 -0.075" rpy="1.5707 0 0"/>
-    <axis xyz="0 0 1"/>
+    <origin xyz="0.20 -0.21 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
   </joint>
 
-  <link name="rear_left_wheel_link"/>
+  <link name="rear_left_wheel_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://rm_sim_26/models/mecanum_car/meshes/wheel_right.dae"/>
+      </geometry>
+    </visual>
+  </link>
   <joint name="rear_left_wheel_joint" type="continuous">
     <parent link="chassis"/>
     <child link="rear_left_wheel_link"/>
-    <origin xyz="-0.25 0.25 -0.075" rpy="1.5707 0 0"/>
-    <axis xyz="0 0 1"/>
+    <origin xyz="-0.20 0.21 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
   </joint>
 
-  <link name="rear_right_wheel_link"/>
+  <link name="rear_right_wheel_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://rm_sim_26/models/mecanum_car/meshes/wheel_left.dae"/>
+      </geometry>
+    </visual>
+  </link>
   <joint name="rear_right_wheel_joint" type="continuous">
     <parent link="chassis"/>
     <child link="rear_right_wheel_link"/>
-    <origin xyz="-0.25 -0.25 -0.075" rpy="1.5707 0 0"/>
-    <axis xyz="0 0 1"/>
+    <origin xyz="-0.20 -0.21 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
   </joint>
 
   <!-- LIDAR -->
@@ -69,49 +161,47 @@
   <joint name="lidar_joint" type="fixed">
     <parent link="chassis"/>
     <child link="livox_lidar"/>
-    <origin xyz="0.2 0 0.125" rpy="0 0 0"/>
+    <origin xyz="0.20 0 0.253" rpy="0 0 0"/>
   </joint>
 
-  <!-- IMU -->
+  <!-- IMU (底盘 IMU TF frame) -->
   <link name="imu_link"/>
   <joint name="imu_joint" type="fixed">
     <parent link="chassis"/>
     <child link="imu_link"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 0.12" rpy="0 0 0"/>
   </joint>
 
-  <!-- GIMBAL BASE -->
-  <link name="gimbal_base"/>
-  <joint name="gimbal_base_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="gimbal_base"/>
-    <origin xyz="0 0 0.125" rpy="0 0 0"/>
-  </joint>
+  <!-- ========== 云台模块 ========== -->
 
-  <!-- GIMBAL YAW（连接gimbal_base和gimbal_yaw）-->
-  <link name="gimbal_yaw"/>
+  <!-- 云台偏航轴 (Yaw) -->
+  <link name="gimbal_yaw">
+    <visual>
+      <geometry>
+        <mesh filename="package://rm_sim_26/models/mecanum_car/meshes/gimbal_yaw.dae"/>
+      </geometry>
+    </visual>
+  </link>
   <joint name="gimbal_yaw_joint" type="revolute">
-    <parent link="gimbal_base"/>
+    <parent link="chassis"/>
     <child link="gimbal_yaw"/>
-    <origin xyz="0 0 0.08" rpy="0 0 0"/>
+    <origin xyz="0 0 0.205" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-3.14159" upper="3.14159" effort="10" velocity="3.14"/>
   </joint>
 
-  <!-- GIMBAL PITCH BRACKET（连接gimbal_yaw和gimbal_pitch_bracket）-->
-  <link name="gimbal_pitch_bracket"/>
-  <joint name="gimbal_pitch_bracket_joint" type="fixed">
-    <parent link="gimbal_yaw"/>
-    <child link="gimbal_pitch_bracket"/>
-    <origin xyz="0 0 0.08" rpy="0 0 0"/>
-  </joint>
-
-  <!-- GIMBAL PITCH（连接gimbal_pitch_bracket和gimbal_pitch）-->
-  <link name="gimbal_pitch"/>
+  <!-- 云台俯仰轴 (Pitch) -->
+  <link name="gimbal_pitch">
+    <visual>
+      <geometry>
+        <mesh filename="package://rm_sim_26/models/mecanum_car/meshes/gimbal_pitch.dae"/>
+      </geometry>
+    </visual>
+  </link>
   <joint name="gimbal_pitch_joint" type="revolute">
-    <parent link="gimbal_pitch_bracket"/>
+    <parent link="gimbal_yaw"/>
     <child link="gimbal_pitch"/>
-    <origin xyz="0.06 0 0" rpy="0 0 0"/>
+    <origin xyz="0.06 0 0.08" rpy="0 0 0"/>
     <axis xyz="0 -1 0"/>
     <limit lower="-0.785398" upper="0.785398" effort="10" velocity="2.0"/>
   </joint>

@@ -321,7 +321,7 @@ def generate_launch_description():
             "-y",
             "9.5",
             "-z",
-            "0.28",
+            "0.1",
             "-R",
             "0.0",
             "-P",
@@ -394,6 +394,13 @@ def generate_launch_description():
         output="screen",
     )
 
+    chassis_imu_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        arguments=["/chassis/imu@sensor_msgs/msg/Imu@gz.msgs.IMU"],
+        output="screen",
+    )
+
     gimbal_yaw_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
@@ -444,6 +451,7 @@ def generate_launch_description():
         cmd_vel_bridge,
         lidar_bridge,
         imu_bridge,
+        chassis_imu_bridge,
         gimbal_yaw_bridge,
         gimbal_pitch_bridge,
         camera_bridge,
