@@ -91,7 +91,7 @@
         </material>
       </visual>
       <visual name="light_bar_left">
-        <pose>0.003 0.060 0 0 0 0</pose>
+        <pose>0.007 0.060 0 0 0 0</pose>
         <geometry>
           <box><size>0.006 0.010 0.100</size></box>
         </geometry>
@@ -102,7 +102,7 @@
         </material>
       </visual>
       <visual name="light_bar_right">
-        <pose>0.003 -0.060 0 0 0 0</pose>
+        <pose>0.007 -0.060 0 0 0 0</pose>
         <geometry>
           <box><size>0.006 0.010 0.100</size></box>
         </geometry>
@@ -142,7 +142,7 @@
         </material>
       </visual>
       <visual name="light_bar_left">
-        <pose>-0.003 0.060 0 0 0 0</pose>
+        <pose>-0.007 0.060 0 0 0 0</pose>
         <geometry>
           <box><size>0.006 0.010 0.100</size></box>
         </geometry>
@@ -153,7 +153,7 @@
         </material>
       </visual>
       <visual name="light_bar_right">
-        <pose>-0.003 -0.060 0 0 0 0</pose>
+        <pose>-0.007 -0.060 0 0 0 0</pose>
         <geometry>
           <box><size>0.006 0.010 0.100</size></box>
         </geometry>
@@ -193,7 +193,7 @@
         </material>
       </visual>
       <visual name="light_bar_front">
-        <pose>0.060 0.003 0 0 0 0</pose>
+        <pose>0.060 0.007 0 0 0 0</pose>
         <geometry>
           <box><size>0.010 0.006 0.100</size></box>
         </geometry>
@@ -204,7 +204,7 @@
         </material>
       </visual>
       <visual name="light_bar_back">
-        <pose>-0.060 0.003 0 0 0 0</pose>
+        <pose>-0.060 0.007 0 0 0 0</pose>
         <geometry>
           <box><size>0.010 0.006 0.100</size></box>
         </geometry>
@@ -244,7 +244,7 @@
         </material>
       </visual>
       <visual name="light_bar_front">
-        <pose>0.060 -0.003 0 0 0 0</pose>
+        <pose>0.060 -0.007 0 0 0 0</pose>
         <geometry>
           <box><size>0.010 0.006 0.100</size></box>
         </geometry>
@@ -255,7 +255,7 @@
         </material>
       </visual>
       <visual name="light_bar_back">
-        <pose>-0.060 -0.003 0 0 0 0</pose>
+        <pose>-0.060 -0.007 0 0 0 0</pose>
         <geometry>
           <box><size>0.010 0.006 0.100</size></box>
         </geometry>
