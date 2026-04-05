@@ -332,6 +332,15 @@ def generate_launch_description():
         output="screen",
     )
 
+    # Bridge for clock (required for use_sim_time)
+    clock_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        arguments=["/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"],
+        output="screen",
+    )
+
+    # Bridge for cmd_vel topic
     cmd_vel_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
@@ -352,12 +361,11 @@ def generate_launch_description():
         lidar_bridge = Node(
             package="ros_gz_bridge",
             executable="parameter_bridge",
+            name="lidar_bridge_node",
             arguments=[
                 "/gz_lidar_points/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked"
             ],
-            remappings=[
-                ("/gz_lidar_points/points", "/livox/lidar"),
-            ],
+            remappings=[("/gz_lidar_points/points", "/livox/lidar")],
             output="screen",
         )
 
@@ -448,6 +456,7 @@ def generate_launch_description():
         gazebo_launch,
         robot_state_publisher,
         delayed_spawn,
+        clock_bridge,
         cmd_vel_bridge,
         lidar_bridge,
         imu_bridge,

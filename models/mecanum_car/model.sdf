@@ -689,7 +689,7 @@
       <wheel_radius>0.076</wheel_radius>
       <topic>/cmd_vel</topic>
       <tf_topic>/tf</tf_topic>
-      <frame_id>odom</frame_id>
+      <frame_id>odom_gt</frame_id>
       <child_frame_id>body</child_frame_id>
     </plugin>
 
